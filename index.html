@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mr High Foods Attendance</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f4f7;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  max-width: 450px;
+  margin: auto;
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px #ccc;
+}
+h1 { text-align: center; color: #17365d; }
+label { display: block; margin-top: 15px; }
+input, select, button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 7px;
+  border: 1px solid #bbb;
+  font-size: 16px;
+}
+button {
+  background: #17365d;
+  color: white;
+  border: none;
+  margin-top: 16px;
+}
+#preview { width: 100%; margin-top: 12px; }
+#result { white-space: pre-wrap; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Mr High Foods</h1>
+<h3>Staff Attendance System</h3>
+
+<p><b>Duty:</b> 10:50 AM – 11:00 PM</p>
+
+<label>Employee Name</label>
+<select id="employee">
+<option value="">Select Employee</option>
+<option>Employee 1</option>
+<option>Employee 2</option>
+<option>Employee 3</option>
+</select>
+
+<label>Attendance Type</label>
+<select id="type">
+<option>Present / Check In</option>
+<option>Check Out</option>
+</select>
+
+<label>Take Live Photo</label>
+<input type="file" id="photo" accept="image/*" capture="user">
+
+<img id="preview" alt="Photo preview" hidden>
+
+<button onclick="markAttendance()">Submit Attendance</button>
+<div id="result"></div>
+</div>
+
+<script>
+const photo = document.getElementById("photo");
+
+photo.addEventListener("change", function() {
+  const file = photo.files[0];
+  if (!file) return;
+
+  document.getElementById("preview").src =
+    URL.createObjectURL(file);
+  document.getElementById("preview").hidden = false;
+});
+
+function markAttendance() {
+  const employee = document.getElementById("employee").value;
+  const type = document.getElementById("type").value;
+  const file = photo.files[0];
+
+  if (!employee) {
+    alert("Please select employee");
+    return;
+  }
+
+  if (!file) {
+    alert("Please take a photo first");
+    return;
+  }
+
+  const now = new Date();
+  const record = {
+    employee: employee,
+    type: type,
+    date: now.toLocaleDateString("en-IN"),
+    time: now.toLocaleTimeString("en-IN"),
+    note: "Time is from this device; server verification pending."
+  };
+
+  const records = JSON.parse(
+    localStorage.getItem("attendanceRecords") || "[]"
+  );
+  records.push(record);
+  localStorage.setItem(
+    "attendanceRecords",
+    JSON.stringify(records)
+  );
+
+  document.getElementById("result").textContent =
+    "Attendance recorded on this device!\n" +
+    "Employee: " + record.employee + "\n" +
+    "Type: " + record.type + "\n" +
+    "Date: " + record.date + "\n" +
+    "Time: " + record.time +
+    "\nNote: Attendance is saved only on this device.";
+}
+</script>
+</body>
+</html>
